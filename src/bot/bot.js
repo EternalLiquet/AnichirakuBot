@@ -44,9 +44,11 @@ let Bot = class Bot {
             if (message.author.bot)
                 return;
             this.GatewayMessageLogger.debug(`User: ${message.author.username}\tServer: ${message.guild != null ? message.guild.name : "In DM Channel"}\tMessageRecieved: ${message.content}\tTimestamp: ${message.createdTimestamp}`);
-            var command = this.commandList.find(command => message.content.includes(`p.${command.name}`));
+            var command = this.commandList.find(command => message.content.includes(`r.${command.name}`));
             if (command) {
-                command.execute(message, message.content.substring((`p.${command.name}`).length, message.content.length).trim());
+                command.execute(message, message.content.substring((`p.${command.name}`).length, message.content.length).trim()).catch((error) => {
+                    message.reply(error.message);
+                });
             }
         });
         return this.client.login(this.token);
