@@ -25,12 +25,14 @@ const discord_js_1 = require("discord.js");
 const inversify_1 = require("inversify");
 const types_1 = require("../util/types");
 const inversify_config_1 = require("../util/inversify.config");
+const inactivity_handler_1 = require("./services/inactivity-handler");
 let Bot = class Bot {
-    constructor(client, token, GatewayMessageLogger, DatabaseConnectionLogger) {
+    constructor(client, token, GatewayMessageLogger, DatabaseConnectionLogger, inactivityHandler) {
         this.client = client;
         this.token = token;
         this.GatewayMessageLogger = GatewayMessageLogger;
         this.DatabaseConnectionLogger = DatabaseConnectionLogger;
+        this.inactivityHandler = inactivityHandler;
     }
     listen() {
         this.client.once('ready', () => __awaiter(this, void 0, void 0, function* () {
@@ -44,6 +46,7 @@ let Bot = class Bot {
             if (message.author.bot)
                 return;
             this.GatewayMessageLogger.debug(`User: ${message.author.username}\tServer: ${message.guild != null ? message.guild.name : "In DM Channel"}\tMessageRecieved: ${message.content}\tTimestamp: ${message.createdTimestamp}`);
+            this.inactivityHandler.handle(message);
             var command = this.commandList.find(command => message.content.includes(`r.${command.name}`));
             if (command) {
                 command.execute(message, message.content.substring((`p.${command.name}`).length, message.content.length).trim()).catch((error) => {
@@ -60,7 +63,8 @@ Bot = __decorate([
     __param(1, inversify_1.inject(types_1.TYPES.Token)),
     __param(2, inversify_1.inject(types_1.TYPES.GatewayMessageLogger)),
     __param(3, inversify_1.inject(types_1.TYPES.DatabaseConnectionLogger)),
-    __metadata("design:paramtypes", [discord_js_1.Client, String, Object, Object])
+    __param(4, inversify_1.inject(types_1.TYPES.InactivityHandler)),
+    __metadata("design:paramtypes", [discord_js_1.Client, String, Object, Object, inactivity_handler_1.InactivityHandler])
 ], Bot);
 exports.Bot = Bot;
 //# sourceMappingURL=bot.js.map

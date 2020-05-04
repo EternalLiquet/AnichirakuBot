@@ -4,9 +4,10 @@ import { TYPES } from "../util/types";
 import { factory } from "../util/log.config";
 import { LoggerFactory, Logger } from "typescript-logging";
 import { DbClient } from "../util/dbclient";
-import { Repository } from "mongodb-typescript";
+import { Repository, objectId } from "mongodb-typescript";
 import container from "../util/inversify.config";
 import { CommandHandler } from "./services/command-services/command-handler";
+import { InactivityHandler } from './services/inactivity-handler';
 
 @injectable()
 export class Bot {
@@ -16,17 +17,20 @@ export class Bot {
     private DatabaseConnectionLogger: Logger;
     private commandHandler: CommandHandler;
     private commandList: Collection<string, any>;
+    private inactivityHandler: InactivityHandler;
 
     constructor(
         @inject(TYPES.Client) client: Client,
         @inject(TYPES.Token) token: string,
         @inject(TYPES.GatewayMessageLogger) GatewayMessageLogger: Logger,
         @inject(TYPES.DatabaseConnectionLogger) DatabaseConnectionLogger: Logger,
+        @inject(TYPES.InactivityHandler) inactivityHandler: InactivityHandler
     ) {
         this.client = client;
         this.token = token;
         this.GatewayMessageLogger = GatewayMessageLogger;
         this.DatabaseConnectionLogger = DatabaseConnectionLogger;
+        this.inactivityHandler = inactivityHandler;
     }
 
     public listen(): Promise<string> {
@@ -42,6 +46,8 @@ export class Bot {
             if (message.author.bot) return;
 
             this.GatewayMessageLogger.debug(`User: ${message.author.username}\tServer: ${message.guild != null ? message.guild.name : "In DM Channel"}\tMessageRecieved: ${message.content}\tTimestamp: ${message.createdTimestamp}`);
+
+            this.inactivityHandler.handle(message);
 
             var command = this.commandList.find(command => message.content.includes(`r.${command.name}`));
             if (command) {

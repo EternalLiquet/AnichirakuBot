@@ -7,6 +7,7 @@ import { Logger } from "typescript-logging";
 import { factory } from "./log.config";
 import { DbClient } from "./dbclient";
 import { CommandHandler } from "../bot/services/command-services/command-handler";
+import { InactivityHandler } from "../bot/services/inactivity-handler";
 
 let container = new Container();
 
@@ -20,5 +21,6 @@ container.bind<Logger>(TYPES.DatabaseConnectionLogger).toConstantValue(factory.g
 container.bind<Logger>(TYPES.ServiceLogger).toConstantValue(factory.getLogger("Services"));
 container.bind<DbClient>(TYPES.DbClient).to(DbClient).inSingletonScope();
 container.bind<CommandHandler>(TYPES.CommandHandler).to(CommandHandler).inSingletonScope();
+container.bind<InactivityHandler>(TYPES.InactivityHandler).to(InactivityHandler).inSingletonScope();
 
 export default container;

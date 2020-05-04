@@ -8,6 +8,7 @@ const discord_js_1 = require("discord.js");
 const log_config_1 = require("./log.config");
 const dbclient_1 = require("./dbclient");
 const command_handler_1 = require("../bot/services/command-services/command-handler");
+const inactivity_handler_1 = require("../bot/services/inactivity-handler");
 let container = new inversify_1.Container();
 container.bind(types_1.TYPES.Bot).to(bot_1.Bot).inSingletonScope();
 container.bind(types_1.TYPES.Client).toConstantValue(new discord_js_1.Client());
@@ -19,5 +20,6 @@ container.bind(types_1.TYPES.DatabaseConnectionLogger).toConstantValue(log_confi
 container.bind(types_1.TYPES.ServiceLogger).toConstantValue(log_config_1.factory.getLogger("Services"));
 container.bind(types_1.TYPES.DbClient).to(dbclient_1.DbClient).inSingletonScope();
 container.bind(types_1.TYPES.CommandHandler).to(command_handler_1.CommandHandler).inSingletonScope();
+container.bind(types_1.TYPES.InactivityHandler).to(inactivity_handler_1.InactivityHandler).inSingletonScope();
 exports.default = container;
 //# sourceMappingURL=inversify.config.js.map

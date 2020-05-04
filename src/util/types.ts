@@ -8,5 +8,6 @@ export const TYPES = {
     GatewayConnectionLogger: Symbol("GatewayConnectionLogger"),
     DatabaseConnectionLogger: Symbol("DatabaseConnectionLogger"),
     CommandHandler: Symbol("CommandHandler"),
-    ServiceLogger: Symbol("ServiceLogger")
+    ServiceLogger: Symbol("ServiceLogger"),
+    InactivityHandler: Symbol("InactivityHandler")
 };
