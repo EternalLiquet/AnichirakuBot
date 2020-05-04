@@ -17,6 +17,7 @@ container.bind<string>(TYPES.DbConnectionString).toConstantValue(process.env.DBC
 container.bind<Logger>(TYPES.GatewayMessageLogger).toConstantValue(factory.getLogger("Gateway.MessageRecieved"));
 container.bind<Logger>(TYPES.GatewayConnectionLogger).toConstantValue(factory.getLogger("GatewayConnection"));
 container.bind<Logger>(TYPES.DatabaseConnectionLogger).toConstantValue(factory.getLogger("DatabaseConnection"));
+container.bind<Logger>(TYPES.ServiceLogger).toConstantValue(factory.getLogger("Services"));
 container.bind<DbClient>(TYPES.DbClient).to(DbClient).inSingletonScope();
 container.bind<CommandHandler>(TYPES.CommandHandler).to(CommandHandler).inSingletonScope();
 
