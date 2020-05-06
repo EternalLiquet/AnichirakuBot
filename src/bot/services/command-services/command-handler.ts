@@ -1,9 +1,10 @@
 import { Collection } from 'discord.js';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../util/types';
+import { AdministratorModule } from './modules/administrative-module';
 
 const moduleList = [
-
+    AdministratorModule
 ];
 
 @injectable()

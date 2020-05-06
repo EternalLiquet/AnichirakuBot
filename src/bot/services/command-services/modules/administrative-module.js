@@ -17,10 +17,10 @@ class AdministratorModule {
     constructor() {
         this.ModuleCommandList = [
             {
-                name: 'configure inactive',
+                name: 'configure inactive days',
                 description: 'Will configure the amount of time that can pass before a user is marked "inactive" (in days)',
-                help_text: `r.configure inactive 3 will set the inactivity timer to three days`,
-                alias: 'set inactive',
+                help_text: `r.configure inactive days 3 will set the inactivity timer to three days`,
+                alias: 'set inactive days',
                 required_permission: 'ADMINISTRATOR',
                 execute(message, args) {
                     return __awaiter(this, void 0, void 0, function* () {
@@ -33,7 +33,7 @@ class AdministratorModule {
                         serviceLogger.info(`Command recieved: ${message.content}`);
                         const dbClient = inversify_config_1.default.get(types_1.TYPES.DbClient);
                         const dbRepo = new mongodb_typescript_1.Repository(anichirakubot_settings_1.AnichirakuBotSettings, dbClient.db, "settings");
-                        const settingsId = `${message.guild.id}_inactivity`;
+                        const settingsId = `${message.guild.id}_inactivity_days`;
                         const newSettings = new anichirakubot_settings_1.AnichirakuBotSettings(settingsId, { "inactivityTimer": args });
                         serviceLogger.debug(`Settings Being Saved: ${JSON.stringify(newSettings, null, 2)}`);
                         yield dbRepo.findById(settingsId).then((result) => __awaiter(this, void 0, void 0, function* () {
@@ -43,6 +43,37 @@ class AdministratorModule {
                                 yield dbRepo.update(newSettings);
                         }));
                         message.channel.send(`Inactivity timer successfully set to: ${args} days`);
+                    });
+                }
+            },
+            {
+                name: 'configure inactive role',
+                description: 'Will configure the role that will be used for inactivity',
+                help_text: `r.configure inactive role Lurker will set the inactivity role to a role it finds named "Lurker"`,
+                alias: 'set inactive role',
+                required_permission: 'ADMINISTRATOR',
+                execute(message, args) {
+                    return __awaiter(this, void 0, void 0, function* () {
+                        const serviceLogger = inversify_config_1.default.get(types_1.TYPES.ServiceLogger);
+                        var guildUser = message.guild.members.cache.find(member => member.id == message.author.id);
+                        if (!guildUser.hasPermission(this.required_permission))
+                            throw new Error('User does not have required permissions'); // If they don't have the required permissions, just exit here
+                        serviceLogger.info(`Command recieved: ${message.content}`);
+                        const dbClient = inversify_config_1.default.get(types_1.TYPES.DbClient);
+                        const dbRepo = new mongodb_typescript_1.Repository(anichirakubot_settings_1.AnichirakuBotSettings, dbClient.db, "settings");
+                        const settingsId = `${message.guild.id}_inactivity_role`;
+                        const inactivityRole = message.guild.roles.cache.find(role => role.name.toLocaleLowerCase() == args.toLocaleLowerCase());
+                        if (inactivityRole == undefined)
+                            throw new Error('Role not found');
+                        const newSettings = new anichirakubot_settings_1.AnichirakuBotSettings(settingsId, { "inactivityRoleId": inactivityRole.id });
+                        serviceLogger.debug(`Settings Being Saved: ${JSON.stringify(newSettings, null, 2)}`);
+                        yield dbRepo.findById(settingsId).then((result) => __awaiter(this, void 0, void 0, function* () {
+                            if (result == null)
+                                yield dbRepo.insert(newSettings);
+                            else
+                                yield dbRepo.update(newSettings);
+                        }));
+                        message.channel.send(`Inactivity role successfully set to: ${inactivityRole.name}`);
                     });
                 }
             }

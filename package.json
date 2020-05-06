@@ -16,6 +16,8 @@
     "discord.js": "^12.0.1",
     "dotenv": "^8.2.0",
     "inversify": "^5.0.1",
+    "moment": "^2.25.3",
+    "momentjs": "^2.0.0",
     "mongodb": "^3.5.3",
     "mongodb-typescript": "^2.2.0",
     "npm": "^6.14.0",

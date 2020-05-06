@@ -40,6 +40,11 @@ export class Bot {
             this.commandHandler = container.get<CommandHandler>(TYPES.CommandHandler);
             this.commandList = this.commandHandler.instantiateCommands();
             this.client.user.setActivity("Bot is under development, please check back later.", { url: "Insert URL here", type: "PLAYING" });
+            this.client.guilds.cache.each(guild => {
+                this.inactivityHandler.check_inactivity(guild).catch((error) => {
+                    this.GatewayMessageLogger.error(error.message);
+                });
+            });
         });
 
         this.client.on('message', (message: Message) => {
@@ -47,7 +52,9 @@ export class Bot {
 
             this.GatewayMessageLogger.debug(`User: ${message.author.username}\tServer: ${message.guild != null ? message.guild.name : "In DM Channel"}\tMessageRecieved: ${message.content}\tTimestamp: ${message.createdTimestamp}`);
 
-            this.inactivityHandler.handle(message);
+            this.inactivityHandler.record_last_activity(message).catch((error) => {
+                this.GatewayMessageLogger.error(error.message);
+            });
 
             var command = this.commandList.find(command => message.content.includes(`r.${command.name}`));
             if (command) {

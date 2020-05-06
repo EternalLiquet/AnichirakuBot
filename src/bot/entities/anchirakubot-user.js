@@ -15,8 +15,8 @@ class AnichirakuUser {
         this.AnichirakuUserId = message.author.id + message.guild.id;
         this.UserName = message.author.username;
         this.ServerName = message.guild.name;
-        this.DiscordId = Number(message.author.id);
-        this.ServerId = Number(message.guild.id);
+        this.DiscordId = message.author.id;
+        this.ServerId = message.guild.id;
         this.LastActivity = message.createdAt;
     }
     reset_last_activity(newActivity) {

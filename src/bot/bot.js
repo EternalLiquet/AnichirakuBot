@@ -41,12 +41,19 @@ let Bot = class Bot {
             this.commandHandler = inversify_config_1.default.get(types_1.TYPES.CommandHandler);
             this.commandList = this.commandHandler.instantiateCommands();
             this.client.user.setActivity("Bot is under development, please check back later.", { url: "Insert URL here", type: "PLAYING" });
+            this.client.guilds.cache.each(guild => {
+                this.inactivityHandler.check_inactivity(guild).catch((error) => {
+                    this.GatewayMessageLogger.error(error.message);
+                });
+            });
         }));
         this.client.on('message', (message) => {
             if (message.author.bot)
                 return;
             this.GatewayMessageLogger.debug(`User: ${message.author.username}\tServer: ${message.guild != null ? message.guild.name : "In DM Channel"}\tMessageRecieved: ${message.content}\tTimestamp: ${message.createdTimestamp}`);
-            this.inactivityHandler.handle(message);
+            this.inactivityHandler.record_last_activity(message).catch((error) => {
+                this.GatewayMessageLogger.error(error.message);
+            });
             var command = this.commandList.find(command => message.content.includes(`r.${command.name}`));
             if (command) {
                 command.execute(message, message.content.substring((`p.${command.name}`).length, message.content.length).trim()).catch((error) => {
